@@ -32,6 +32,7 @@ void merge(int *A, int p, int q, int u) {
 			A[k] = r[j];
 			j = j + 1;
 		}
+		comparacoes++;
 	}
 }
 

@@ -13,81 +13,82 @@ unsigned long long comparacoes = 0;
 #include "Bubblesort.h"
 
 // 1. Bublesort;
-// 2. Iinsertionsort
+// 2. Insertionsort;
 // 3. Mergesort;
 // 4. Heapsort;
 // 5. Quicksort.
 
-void gravarInfoDaExecucao(int tam, int tipo) {
+void gravarInfoDaExecucao(int tam, int tipo)
+{
 	FILE *arq;
 
 	arq = fopen("resultados.txt", "a"); 
-
-	if (arq == NULL) {
-		printf("Problemas na CRIACAO do arquivo\n");
+	if (arq == NULL)  
+	{
+		printf("Problema ao criar o arquivo .txt\n");
 		return;
 	}
 
-	switch (tipo) {
+	switch (tipo)
+	{
 	case 1:
-		fprintf(arq, "CRESCENTE -");
+		fprintf(arq, "\nCRESCENTE -");
 		break;
 	case 2:
-		fprintf(arq, "DECRESCENTE -");
+		fprintf(arq, "\nDECRESCENTE -");
 		break;
 	case 3:
-		fprintf(arq, "ALEATORIO -");
+		fprintf(arq, "\nALEATORIO -");
 		break;
 	}
 
-	switch (tam) {
-		case 100:
-			fprintf(arq, " TAMANHO: 100\n");
-			break;
-		case 500:
-			fprintf(arq, " TAMANHO: 500\n");
-			break;
-		case 1000:
-			fprintf(arq, " TAMANHO: 1.000\n");
-			break;
-		case 5000:
-			fprintf(arq, " TAMANHO: 5.000\n");
-			break;
-		case 30000:
-			fprintf(arq, " TAMANHO: 30.000\n");
-			break;
-		case 80000:
-			fprintf(arq, " TAMANHO: 80.000\n");
-			break;
-		case 100000:
-			fprintf(arq, " TAMANHO: 100.000\n");
-			break;
-		case 150000:
-			fprintf(arq, " TAMANHO: 150.000\n");
-			break;
-		case 200000:
-			fprintf(arq, " TAMANHO: 200.000\n");
-			break;
+	switch (tam)
+	{
+	case 100:
+		fprintf(arq, " TAMANHO: 100\n");
+		break;
+	case 500:
+		fprintf(arq, " TAMANHO: 500\n");
+		break;
+	case 1000:
+		fprintf(arq, " TAMANHO: 1.000\n");
+		break;
+	case 5000:
+		fprintf(arq, " TAMANHO: 5.000\n");
+		break;
+	case 30000:
+		fprintf(arq, " TAMANHO: 30.000\n");
+		break;
+	case 80000:
+		fprintf(arq, " TAMANHO: 80.000\n");
+		break;
+	case 100000:
+		fprintf(arq, " TAMANHO: 100.000\n");
+		break;
+	case 150000:
+		fprintf(arq, " TAMANHO: 150.000\n");
+		break;
+	case 200000:
+		fprintf(arq, " TAMANHO: 200.000\n");
+		break;
 	}
 
 	fclose(arq);
 }
 
-void gravarDados(clock_t t , char string[13])
+void gravarDados(clock_t t , unsigned long long comparacoes, char string[13])
 {
 	FILE *arq2;
 
 	arq2 = fopen("resultados.txt", "a");  
-	
-	if (arq2 == NULL) {
-		printf("Problemas na CRIACAO do arquivo\n");
+	if (arq2 == NULL)  
+	{
+		printf("Problema ao criar o arquivo .txt\n");
 		return;
 	}
-
 	double tempo = ((double)t) / ((CLOCKS_PER_SEC / 1000));
 	if(tempo < 0)tempo *= -1;
-
-	fprintf(arq2, "\t%s: TEMPO: %lf\n", string,  tempo);
+	fprintf(arq2, "\t%s-COMPARACOES: %I64u -- TEMPO: %lf\n", string, comparacoes, tempo);
 	fclose(arq2);
 }
 
@@ -96,29 +97,29 @@ void numeroDaExec(int exec) {
 
 	arq = fopen("resultados.txt", "a");  
 	if (arq == NULL) {
-		printf("Problemas na CRIACAO do arquivo\n");
+		printf("Problema ao criar o arquivo .txt\n");
 		return;
 	}
 
 	switch (exec) {
-	case 1:
-		fprintf(arq, "   Execucao 1:\n");
-		break;
-	case 2:
-		fprintf(arq, "   Execucao 2:\n");
-		break;
-	case 3:
-		fprintf(arq, "   Execucao 3:\n");
-		break;
-	}
+		case 1:
+			fprintf(arq, "\nExecucao 1:\n");
+			break;
+		case 2:
+			fprintf(arq, "\nExecucao 2:\n");
+			break;
+		case 3:
+			fprintf(arq, "\nExecucao 3:\n");
+			break;
+		}
 
-	fclose(arq);
-}
+		fclose(arq);
+	}
 
 void gerarVetor(int *vetor, int tam, int tipo) {
 	int i;
 	
-	//crescente
+	//vetor crescente
 	if(tipo == 1) {
 		for(i = 0; i < tam; i++) {
 			vetor[i] = i + 1;
@@ -129,12 +130,13 @@ void gerarVetor(int *vetor, int tam, int tipo) {
 			vetor[tam - i] = i;
 		}
 	}
+	
+
 }
 
 void pegarVetorAleatorio(int *vetor, int *vetorAleatorio, int tam){
 	int i;
-	
-	for(i=0; i < tam; i++) {
+	for(i=0; i<tam; i++){
 		vetor[i] = vetorAleatorio[i];
 	}
 }
@@ -157,38 +159,39 @@ void ordenacao(int tam) {
 		numeroDaExec(i);
 		
 		gerarVetor(vetor, tam, 1);//gera o vetor usado
+		comparacoes = 0;//zera a quantidade de comparacoes
 		t = clock();//captura o tempo inicial
 		bubblesort(vetor,tam);
 		t = clock() - t;// tempo de execucao
-		gravarDados(t, "Bubble");
+		gravarDados(t, comparacoes, "Bubble");
 		
 		gerarVetor(vetor, tam, 1);//gera o vetor usado
 		comparacoes = 0;
 		t = clock();
 		insertionSort(vetor, tam);
 		t = clock() - t;
-		gravarDados(t, "Insertion");
+		gravarDados(t, comparacoes, "Insertion");
 		
 		gerarVetor(vetor, tam, 1);//gera o vetor usado
 		comparacoes = 0;
 		t = clock();
 		mergeSort(vetor,0,tam);
 		t = clock() - t;
-		gravarDados(t, "Merge");
+		gravarDados(t, comparacoes, "Merge");
 		
 		gerarVetor(vetor, tam, 1);//gera o vetor usado
 		comparacoes = 0;
 		t = clock();
 		construirHeap(vetor, tam);
 		t = clock() - t;
-		gravarDados(t, "Heap");
+		gravarDados(t, comparacoes, "Heap");
 		
 		gerarVetor(vetor, tam, 1);//gera o vetor usado
 		comparacoes = 0;
 		t = clock();
 		quickSort(vetor, 0, tam);
 		t = clock() - t;
-		gravarDados(t, "Quick");
+		gravarDados(t, comparacoes, "Quick");
 	}
 
 	//vetor decrescente
@@ -197,38 +200,39 @@ void ordenacao(int tam) {
 		numeroDaExec(i);
 		
 		gerarVetor(vetor, tam, 2);//gera o vetor usado
+		comparacoes = 0;//zera a quantidade de comparacoes
 		t = clock();//captura o tempo inicial
 		bubblesort(vetor,tam);
 		t = clock() - t;// tempo de execucao
-		gravarDados(t, "Bubble");
+		gravarDados(t, comparacoes, "Bubble");
 		
 		gerarVetor(vetor, tam, 2);
 		comparacoes = 0;
 		t = clock();
 		insertionSort(vetor, tam);
 		t = clock() - t;
-		gravarDados(t, "Insertion");
+		gravarDados(t, comparacoes, "Insertion");
 		
 		gerarVetor(vetor, tam, 2);
 		comparacoes = 0;
 		t = clock();
 		mergeSort(vetor,0,tam);
 		t = clock() - t;
-		gravarDados(t, "Merge");
+		gravarDados(t, comparacoes, "Merge");
 		
 		gerarVetor(vetor, tam, 2);
 		comparacoes = 0;
 		t = clock();
 		construirHeap(vetor, tam);
 		t = clock() - t;
-		gravarDados(t, "Heap");
+		gravarDados(t, comparacoes, "Heap");
 		
 		gerarVetor(vetor, tam, 2);
 		comparacoes = 0;
 		t = clock();
 		quickSort(vetor, 0, tam);
 		t = clock() - t;
-		gravarDados(t, "Quick");
+		gravarDados(t, comparacoes, "Quick");
 	}
 
 
@@ -238,42 +242,44 @@ void ordenacao(int tam) {
 		numeroDaExec(i);
 		
 		pegarVetorAleatorio(vetor, vetorAleatorio,tam);//gera o vetor usado
+		comparacoes = 0;//zera a quantidade de comparacoes
 		t = clock();//captura o tempo inicial
 		bubblesort(vetor,tam);
 		t = clock() - t;// tempo de execucao
-		gravarDados(t, "Bubble");
+		gravarDados(t, comparacoes, "Bubble");
 		
 		pegarVetorAleatorio(vetor, vetorAleatorio,tam);
 		comparacoes = 0;
 		t = clock();
 		insertionSort(vetor, tam);
 		t = clock() - t;
-		gravarDados(t, "Insertion");
+		gravarDados(t, comparacoes, "Insertion");
 		
 		pegarVetorAleatorio(vetor, vetorAleatorio,tam);
 		comparacoes = 0;
 		t = clock();
 		mergeSort(vetor,0,tam);
 		t = clock() - t;
-		gravarDados(t, "Merge");
+		gravarDados(t, comparacoes, "Merge");
 		
 		pegarVetorAleatorio(vetor, vetorAleatorio,tam);
 		comparacoes = 0;
 		t = clock();
 		construirHeap(vetor, tam);
 		t = clock() - t;
-		gravarDados(t, "Heap");
+		gravarDados(t, comparacoes, "Heap");
 		
 		pegarVetorAleatorio(vetor, vetorAleatorio,tam);
 		comparacoes = 0;
 		t = clock();
 		quickSort(vetor, 0, tam);
 		t = clock() - t;
-		gravarDados(t, "Quick");
+		gravarDados(t, comparacoes, "Quick");
 	}
 }
 
 int main() {
+	ordenacao(100);
 	ordenacao(500);
 
 	return 0;

@@ -1,4 +1,5 @@
-int separa (int *v, int primeiro, int ultimo) {
+int separa (int *v, int primeiro, int ultimo)
+{
 	int pivo = v[ultimo];
 	int aux, k, j = primeiro;
 
@@ -9,6 +10,7 @@ int separa (int *v, int primeiro, int ultimo) {
 			v[k] = aux;
 			j++;
 		}
+		comparacoes++;
 	}
 
 	aux = v[j];
