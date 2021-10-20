@@ -12,6 +12,12 @@ unsigned long long comparacoes = 0;
 #include "HeapSort.h"
 #include "Bubblesort.h"
 
+typedef struct {
+	unsigned long long somaComparacoes;
+	double somaTempos;
+} CamposSomaMedias;
+
+
 // 1. Bublesort;
 // 2. Insertionsort;
 // 3. Mergesort;
@@ -73,6 +79,26 @@ void gravarInfoDaExecucao(int tam, int tipo)
 		break;
 	}
 
+	fclose(arq);
+}
+
+void gravarMedia(CamposSomaMedias parametrosSomaMedias[10]) {
+	FILE *arq;
+
+	arq = fopen("resultados.txt", "a");  
+	if (arq == NULL) {
+		printf("Problema ao criar o arquivo .txt\n");
+		return;
+	}
+
+	fprintf(arq, "\nMedia Execucoes:\n");
+	fprintf(arq, "\tBubble-COMPARACOES: %I64u -- TEMPO: %lf\n",  parametrosSomaMedias[0].somaComparacoes / 3, parametrosSomaMedias[0].somaTempos / 3.0);
+	fprintf(arq, "\tInsertion-COMPARACOES: %I64u -- TEMPO: %lf\n",  parametrosSomaMedias[1].somaComparacoes / 3, parametrosSomaMedias[1].somaTempos / 3.0);
+	fprintf(arq, "\tMerge-COMPARACOES: %I64u -- TEMPO: %lf\n",  parametrosSomaMedias[2].somaComparacoes / 3, parametrosSomaMedias[2].somaTempos / 3.0);
+	fprintf(arq, "\tHeap-COMPARACOES: %I64u -- TEMPO: %lf\n",  parametrosSomaMedias[3].somaComparacoes / 3, parametrosSomaMedias[3].somaTempos / 3.0);
+	fprintf(arq, "\tQuick-COMPARACOES: %I64u -- TEMPO: %lf\n",  parametrosSomaMedias[4].somaComparacoes / 3, parametrosSomaMedias[4].somaTempos / 3.0);
+
+	
 	fclose(arq);
 }
 
@@ -146,9 +172,17 @@ void ordenacao(int tam) {
 	int i;
 	int vetor[tam];
 	int vetorAleatorio[tam];
+
+	// Soma relacionado a media de cada algoritmo
+	CamposSomaMedias bubblesortParametrosMedia = { .somaComparacoes = 0, .somaTempos = 0.0 };
+	CamposSomaMedias insertionParametrosMedia = { .somaComparacoes = 0, .somaTempos = 0.0 };
+	CamposSomaMedias mergeParametrosMedia = { .somaComparacoes = 0, .somaTempos = 0.0 };
+	CamposSomaMedias heapParametrosMedia = { .somaComparacoes = 0, .somaTempos = 0.0 };
+	CamposSomaMedias quickParametrosMedia = { .somaComparacoes = 0, .somaTempos = 0.0 };
+
 	
 	//gerando vetor aleatorio para ser unico a todos
-	for(i = 0; i < tam; i++) {
+	for (i = 0; i < tam; i++) {
 		vetorAleatorio[i] = rand() % 100;
 	}
 	
@@ -164,47 +198,68 @@ void ordenacao(int tam) {
 		bubblesort(vetor,tam);
 		t = clock() - t;// tempo de execucao
 		gravarDados(t, comparacoes, "Bubble");
+		bubblesortParametrosMedia.somaComparacoes += comparacoes;
+		bubblesortParametrosMedia.somaTempos += ((double)t) / ((CLOCKS_PER_SEC / 1000)); 
 		
-		gerarVetor(vetor, tam, 1);//gera o vetor usado
+		gerarVetor(vetor, tam, 1);
 		comparacoes = 0;
 		t = clock();
 		insertionSort(vetor, tam);
 		t = clock() - t;
 		gravarDados(t, comparacoes, "Insertion");
+		insertionParametrosMedia.somaComparacoes += comparacoes;
+		insertionParametrosMedia.somaTempos += ((double)t) / ((CLOCKS_PER_SEC / 1000)); 
 		
-		gerarVetor(vetor, tam, 1);//gera o vetor usado
+		gerarVetor(vetor, tam, 1);
 		comparacoes = 0;
 		t = clock();
 		mergeSort(vetor,0,tam);
 		t = clock() - t;
 		gravarDados(t, comparacoes, "Merge");
-		
-		gerarVetor(vetor, tam, 1);//gera o vetor usado
+		mergeParametrosMedia.somaComparacoes += comparacoes;
+		mergeParametrosMedia.somaTempos += ((double)t) / ((CLOCKS_PER_SEC / 1000)); 
+
+		gerarVetor(vetor, tam, 1);
 		comparacoes = 0;
 		t = clock();
 		construirHeap(vetor, tam);
 		t = clock() - t;
 		gravarDados(t, comparacoes, "Heap");
-		
-		gerarVetor(vetor, tam, 1);//gera o vetor usado
+		heapParametrosMedia.somaComparacoes += comparacoes;
+		heapParametrosMedia.somaTempos += ((double)t) / ((CLOCKS_PER_SEC / 1000)); 
+
+		gerarVetor(vetor, tam, 1);
 		comparacoes = 0;
 		t = clock();
 		quickSort(vetor, 0, tam);
 		t = clock() - t;
 		gravarDados(t, comparacoes, "Quick");
+		quickParametrosMedia.somaComparacoes += comparacoes;
+		quickParametrosMedia.somaTempos += ((double)t) / ((CLOCKS_PER_SEC / 1000)); 
 	}
+
+	//gravar media e resetar os parametros
+	CamposSomaMedias parametroGravarMediaCrescente[10] = {bubblesortParametrosMedia, insertionParametrosMedia, mergeParametrosMedia, heapParametrosMedia, quickParametrosMedia};
+	gravarMedia(parametroGravarMediaCrescente);
+	bubblesortParametrosMedia.somaComparacoes = 0; bubblesortParametrosMedia.somaTempos = 0.0;
+	insertionParametrosMedia.somaComparacoes = 0, insertionParametrosMedia.somaTempos = 0.0;
+	mergeParametrosMedia.somaComparacoes = 0, mergeParametrosMedia.somaTempos = 0.0;
+	heapParametrosMedia.somaComparacoes = 0, heapParametrosMedia.somaTempos = 0.0;
+	quickParametrosMedia.somaComparacoes = 0, quickParametrosMedia.somaTempos = 0.0;
 
 	//vetor decrescente
 	gravarInfoDaExecucao(tam, 2);
 	for(i = 1; i <= 3; i++) {
 		numeroDaExec(i);
 		
-		gerarVetor(vetor, tam, 2);//gera o vetor usado
-		comparacoes = 0;//zera a quantidade de comparacoes
-		t = clock();//captura o tempo inicial
+		gerarVetor(vetor, tam, 2);
+		comparacoes = 0;
+		t = clock();
 		bubblesort(vetor,tam);
-		t = clock() - t;// tempo de execucao
+		t = clock() - t;
 		gravarDados(t, comparacoes, "Bubble");
+		bubblesortParametrosMedia.somaComparacoes += comparacoes;
+		bubblesortParametrosMedia.somaTempos += ((double)t) / ((CLOCKS_PER_SEC / 1000)); 
 		
 		gerarVetor(vetor, tam, 2);
 		comparacoes = 0;
@@ -212,6 +267,8 @@ void ordenacao(int tam) {
 		insertionSort(vetor, tam);
 		t = clock() - t;
 		gravarDados(t, comparacoes, "Insertion");
+		insertionParametrosMedia.somaComparacoes += comparacoes;
+		insertionParametrosMedia.somaTempos += ((double)t) / ((CLOCKS_PER_SEC / 1000)); 
 		
 		gerarVetor(vetor, tam, 2);
 		comparacoes = 0;
@@ -219,6 +276,8 @@ void ordenacao(int tam) {
 		mergeSort(vetor,0,tam);
 		t = clock() - t;
 		gravarDados(t, comparacoes, "Merge");
+		mergeParametrosMedia.somaComparacoes += comparacoes;
+		mergeParametrosMedia.somaTempos += ((double)t) / ((CLOCKS_PER_SEC / 1000)); 
 		
 		gerarVetor(vetor, tam, 2);
 		comparacoes = 0;
@@ -226,6 +285,8 @@ void ordenacao(int tam) {
 		construirHeap(vetor, tam);
 		t = clock() - t;
 		gravarDados(t, comparacoes, "Heap");
+		heapParametrosMedia.somaComparacoes += comparacoes;
+		heapParametrosMedia.somaTempos += ((double)t) / ((CLOCKS_PER_SEC / 1000)); 
 		
 		gerarVetor(vetor, tam, 2);
 		comparacoes = 0;
@@ -233,7 +294,18 @@ void ordenacao(int tam) {
 		quickSort(vetor, 0, tam);
 		t = clock() - t;
 		gravarDados(t, comparacoes, "Quick");
+		quickParametrosMedia.somaComparacoes += comparacoes;
+		quickParametrosMedia.somaTempos += ((double)t) / ((CLOCKS_PER_SEC / 1000)); 
 	}
+
+	//gravar media e resetar os parametros
+	CamposSomaMedias parametroGravarMediaDecrescente[10] = {bubblesortParametrosMedia, insertionParametrosMedia, mergeParametrosMedia, heapParametrosMedia, quickParametrosMedia};
+	gravarMedia(parametroGravarMediaDecrescente);
+	bubblesortParametrosMedia.somaComparacoes = 0; bubblesortParametrosMedia.somaTempos = 0.0;
+	insertionParametrosMedia.somaComparacoes = 0, insertionParametrosMedia.somaTempos = 0.0;
+	mergeParametrosMedia.somaComparacoes = 0, mergeParametrosMedia.somaTempos = 0.0;
+	heapParametrosMedia.somaComparacoes = 0, heapParametrosMedia.somaTempos = 0.0;
+	quickParametrosMedia.somaComparacoes = 0, quickParametrosMedia.somaTempos = 0.0;
 
 
 	//vetor aleatorio
@@ -241,12 +313,14 @@ void ordenacao(int tam) {
 	for(i = 1; i <= 3; i++) {
 		numeroDaExec(i);
 		
-		pegarVetorAleatorio(vetor, vetorAleatorio,tam);//gera o vetor usado
-		comparacoes = 0;//zera a quantidade de comparacoes
-		t = clock();//captura o tempo inicial
+		pegarVetorAleatorio(vetor, vetorAleatorio,tam);
+		comparacoes = 0;
+		t = clock();
 		bubblesort(vetor,tam);
-		t = clock() - t;// tempo de execucao
+		t = clock() - t;
 		gravarDados(t, comparacoes, "Bubble");
+		bubblesortParametrosMedia.somaComparacoes += comparacoes;
+		bubblesortParametrosMedia.somaTempos += ((double)t) / ((CLOCKS_PER_SEC / 1000)); 
 		
 		pegarVetorAleatorio(vetor, vetorAleatorio,tam);
 		comparacoes = 0;
@@ -254,6 +328,8 @@ void ordenacao(int tam) {
 		insertionSort(vetor, tam);
 		t = clock() - t;
 		gravarDados(t, comparacoes, "Insertion");
+		insertionParametrosMedia.somaComparacoes += comparacoes;
+		insertionParametrosMedia.somaTempos += ((double)t) / ((CLOCKS_PER_SEC / 1000)); 
 		
 		pegarVetorAleatorio(vetor, vetorAleatorio,tam);
 		comparacoes = 0;
@@ -261,6 +337,8 @@ void ordenacao(int tam) {
 		mergeSort(vetor,0,tam);
 		t = clock() - t;
 		gravarDados(t, comparacoes, "Merge");
+		mergeParametrosMedia.somaComparacoes += comparacoes;
+		mergeParametrosMedia.somaTempos += ((double)t) / ((CLOCKS_PER_SEC / 1000)); 
 		
 		pegarVetorAleatorio(vetor, vetorAleatorio,tam);
 		comparacoes = 0;
@@ -268,6 +346,8 @@ void ordenacao(int tam) {
 		construirHeap(vetor, tam);
 		t = clock() - t;
 		gravarDados(t, comparacoes, "Heap");
+		heapParametrosMedia.somaComparacoes += comparacoes;
+		heapParametrosMedia.somaTempos += ((double)t) / ((CLOCKS_PER_SEC / 1000)); 
 		
 		pegarVetorAleatorio(vetor, vetorAleatorio,tam);
 		comparacoes = 0;
@@ -275,7 +355,12 @@ void ordenacao(int tam) {
 		quickSort(vetor, 0, tam);
 		t = clock() - t;
 		gravarDados(t, comparacoes, "Quick");
+		quickParametrosMedia.somaComparacoes += comparacoes;
+		quickParametrosMedia.somaTempos += ((double)t) / ((CLOCKS_PER_SEC / 1000)); 
 	}
+
+	CamposSomaMedias parametroGravarMediaVariavel[10] = {bubblesortParametrosMedia, insertionParametrosMedia, mergeParametrosMedia, heapParametrosMedia, quickParametrosMedia};
+	gravarMedia(parametroGravarMediaVariavel);
 }
 
 int main() {
