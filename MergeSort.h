@@ -7,11 +7,11 @@ void merge(int *A, int p, int q, int u) {
 	int l[n1+2];
 	int r[n2+2];
 	
-	for(i = 0; i <= n1; i++){
+	for(i = 0; i <= n1; i++) {
 		l[i] = A[p + i];
 	}
 
-	for(j = 0; j<= n2; j++){
+	for(j = 0; j<= n2; j++) {
 		
 		r[j] = A[q + 1 + j];
 	}
@@ -23,15 +23,15 @@ void merge(int *A, int p, int q, int u) {
 	j = 0;
 	int k;
 	
-    for(k = p; k <= u; k++){
-    	
-		if(l[i]<r[j]){
+  for(k = p; k <= u; k++) {
+		if(l[i]<r[j]) {
 			A[k] = l[i];
 			i = i + 1;	
 		} else {	
 			A[k] = r[j];
 			j = j + 1;
 		}
+		
 		comparacoes++;
 	}
 }
