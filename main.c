@@ -11,6 +11,7 @@ unsigned long long comparacoes = 0;
 #include "MergeSort.h"
 #include "HeapSort.h"
 #include "Bubblesort.h"
+#include "Hibrido.h"
 
 typedef struct {
 	unsigned long long somaComparacoes;
@@ -47,8 +48,7 @@ void gravarInfoDaExecucao(int tam, int tipo)
 		break;
 	}
 
-	switch (tam)
-	{
+	switch (tam) {
 	case 100:
 		fprintf(arq, " TAMANHO: 100\n");
 		break;
@@ -96,7 +96,7 @@ void gravarMedia(CamposSomaMedias parametrosSomaMedias[10]) {
 	fprintf(arq, "\tMerge-COMPARACOES: %I64u -- TEMPO: %lf\n",  parametrosSomaMedias[2].somaComparacoes / 3, parametrosSomaMedias[2].somaTempos / 3.0);
 	fprintf(arq, "\tHeap-COMPARACOES: %I64u -- TEMPO: %lf\n",  parametrosSomaMedias[3].somaComparacoes / 3, parametrosSomaMedias[3].somaTempos / 3.0);
 	fprintf(arq, "\tQuick-COMPARACOES: %I64u -- TEMPO: %lf\n",  parametrosSomaMedias[4].somaComparacoes / 3, parametrosSomaMedias[4].somaTempos / 3.0);
-
+	fprintf(arq, "\tHibrido-COMPARACOES: %I64u -- TEMPO: %lf\n",  parametrosSomaMedias[5].somaComparacoes / 3, parametrosSomaMedias[5].somaTempos / 3.0);
 	
 	fclose(arq);
 }
@@ -177,6 +177,7 @@ void ordenacao(int tam) {
 	CamposSomaMedias mergeSomasParaMedia = { .somaComparacoes = 0, .somaTempos = 0.0 };
 	CamposSomaMedias heapSomasParaMedia = { .somaComparacoes = 0, .somaTempos = 0.0 };
 	CamposSomaMedias quickSomasParaMedia = { .somaComparacoes = 0, .somaTempos = 0.0 };
+	CamposSomaMedias hibridoSomasParaMedia = { .somaComparacoes = 0, .somaTempos = 0.0 };
 
 	
 	//gerando vetor aleatorio para ser unico a todos
@@ -234,16 +235,26 @@ void ordenacao(int tam) {
 		gravarDados(t, comparacoes, "Quick");
 		quickSomasParaMedia.somaComparacoes += comparacoes;
 		quickSomasParaMedia.somaTempos += ((double)t) / ((CLOCKS_PER_SEC / 1000)); 
+
+		gerarVetor(vetor, tam, 1);
+		comparacoes = 0;
+		t = clock();
+		hibrido(vetor, 0, tam);
+		t = clock() - t;
+		gravarDados(t, comparacoes, "Hibrido");
+		hibridoSomasParaMedia.somaComparacoes += comparacoes;
+		hibridoSomasParaMedia.somaTempos += ((double)t) / ((CLOCKS_PER_SEC / 1000)); 
 	}
 
 	//gravar media e reseta soma das comparacoes e tempos de cada algortmo para o calculo da media
-	CamposSomaMedias parametroGravarMediaCrescente[10] = {bubblesortSomasParaMedia, insertionSomasParaMedia, mergeSomasParaMedia, heapSomasParaMedia, quickSomasParaMedia};
+	CamposSomaMedias parametroGravarMediaCrescente[20] = {bubblesortSomasParaMedia, insertionSomasParaMedia, mergeSomasParaMedia, heapSomasParaMedia, quickSomasParaMedia, hibridoSomasParaMedia};
 	gravarMedia(parametroGravarMediaCrescente);
 	bubblesortSomasParaMedia.somaComparacoes = 0; bubblesortSomasParaMedia.somaTempos = 0.0;
 	insertionSomasParaMedia.somaComparacoes = 0, insertionSomasParaMedia.somaTempos = 0.0;
 	mergeSomasParaMedia.somaComparacoes = 0, mergeSomasParaMedia.somaTempos = 0.0;
 	heapSomasParaMedia.somaComparacoes = 0, heapSomasParaMedia.somaTempos = 0.0;
 	quickSomasParaMedia.somaComparacoes = 0, quickSomasParaMedia.somaTempos = 0.0;
+	hibridoSomasParaMedia.somaComparacoes = 0, hibridoSomasParaMedia.somaTempos = 0.0;
 
 	//vetor decrescente
 	gravarInfoDaExecucao(tam, 2);
@@ -294,17 +305,26 @@ void ordenacao(int tam) {
 		gravarDados(t, comparacoes, "Quick");
 		quickSomasParaMedia.somaComparacoes += comparacoes;
 		quickSomasParaMedia.somaTempos += ((double)t) / ((CLOCKS_PER_SEC / 1000)); 
+
+		gerarVetor(vetor, tam, 2);
+		comparacoes = 0;
+		t = clock();
+		hibrido(vetor, 0, tam);
+		t = clock() - t;
+		gravarDados(t, comparacoes, "Hibrido");
+		hibridoSomasParaMedia.somaComparacoes += comparacoes;
+		hibridoSomasParaMedia.somaTempos += ((double)t) / ((CLOCKS_PER_SEC / 1000)); 
 	}
 
 	//gravar media e resetar os parametros
-	CamposSomaMedias parametroGravarMediaDecrescente[10] = {bubblesortSomasParaMedia, insertionSomasParaMedia, mergeSomasParaMedia, heapSomasParaMedia, quickSomasParaMedia};
+	CamposSomaMedias parametroGravarMediaDecrescente[20] = {bubblesortSomasParaMedia, insertionSomasParaMedia, mergeSomasParaMedia, heapSomasParaMedia, quickSomasParaMedia, hibridoSomasParaMedia};
 	gravarMedia(parametroGravarMediaDecrescente);
 	bubblesortSomasParaMedia.somaComparacoes = 0; bubblesortSomasParaMedia.somaTempos = 0.0;
 	insertionSomasParaMedia.somaComparacoes = 0, insertionSomasParaMedia.somaTempos = 0.0;
 	mergeSomasParaMedia.somaComparacoes = 0, mergeSomasParaMedia.somaTempos = 0.0;
 	heapSomasParaMedia.somaComparacoes = 0, heapSomasParaMedia.somaTempos = 0.0;
 	quickSomasParaMedia.somaComparacoes = 0, quickSomasParaMedia.somaTempos = 0.0;
-
+	hibridoSomasParaMedia.somaComparacoes = 0, hibridoSomasParaMedia.somaTempos = 0.0;
 
 	//vetor aleatorio
 	gravarInfoDaExecucao(tam, 3);
@@ -355,15 +375,31 @@ void ordenacao(int tam) {
 		gravarDados(t, comparacoes, "Quick");
 		quickSomasParaMedia.somaComparacoes += comparacoes;
 		quickSomasParaMedia.somaTempos += ((double)t) / ((CLOCKS_PER_SEC / 1000)); 
+
+		pegarVetorAleatorio(vetor, vetorAleatorio,tam);
+		comparacoes = 0;
+		t = clock();
+		hibrido(vetor, 0, tam);
+		t = clock() - t;
+		gravarDados(t, comparacoes, "Hibrido");
+		hibridoSomasParaMedia.somaComparacoes += comparacoes;
+		hibridoSomasParaMedia.somaTempos += ((double)t) / ((CLOCKS_PER_SEC / 1000)); 
 	}
 
-	CamposSomaMedias parametroGravarMediaVariavel[10] = {bubblesortSomasParaMedia, insertionSomasParaMedia, mergeSomasParaMedia, heapSomasParaMedia, quickSomasParaMedia};
+	CamposSomaMedias parametroGravarMediaVariavel[20] = {bubblesortSomasParaMedia, insertionSomasParaMedia, mergeSomasParaMedia, heapSomasParaMedia, quickSomasParaMedia, hibridoSomasParaMedia};
 	gravarMedia(parametroGravarMediaVariavel);
 }
 
 int main() {
-	ordenacao(100);
-	ordenacao(500);
+	// ordenacao(100);
+	// ordenacao(500);
+	// ordenacao(1000);
+	// ordenacao(5000);
+	// ordenacao(30000);
+	// ordenacao(80000);
+	// ordenacao(100000);
+	// ordenacao(150000);
+	ordenacao(200000);
 
 	return 0;
 }
